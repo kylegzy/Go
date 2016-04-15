@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
+class ParallelLine(Exception):
+    pass
 
 def imgChop(img, pos, shape):
     newimage=np.zeros(shape,img.dtype)
@@ -9,6 +11,29 @@ def imgChop(img, pos, shape):
         newimage[i,:]=img[pos[0]+i,pos[1]:(pos[1]+shape[1])]
     return newimage
 
+def getCandidateLines(d):
+    max1=0
+    max2=0
+    maxkey1=''
+    maxkey2=''
+    for key in d:
+        length=len(d[key])
+        if  length > max1:
+            max2=max1
+            maxkey2=maxkey1
+            max1=length
+            maxkey1=key
+        elif length > max2:
+            max2=length
+            maxkey2=key
+        else:
+            pass
+        
+    return [maxkey1, maxkey2]
+    
+def getEffectiveLines(l):
+    
+   
 def calBlockSize(lines):
     d=dict()
     for rho,theta in lines[:,0,:]:
@@ -16,7 +41,14 @@ def calBlockSize(lines):
             d[theta]=[rho]
         else:
             d[theta].append(rho)
-    ##should only have two values of theta
+            
+    
+    ##should only have two values of theta for an ideal image
+    ##take the two thetas with the longest member
+    
+    candidate=getCandidateLines(d)
+        
+        
     boundary=np.zeros((4,2))
     blocksize=np.zeros((2,1),dtype=int)
     i=0
@@ -32,6 +64,17 @@ def calBlockSize(lines):
         i=i+2
         j=j+1
     return boundary, blocksize
+    
+def calIntersection(rho1, theta1, rho2, theta2):
+    if theta1 == theta2:
+        raise ParallelLine
+    else:
+        x = (rho2*np.sin(theta1)-rho1*np.sin(theta2))/np.sin(theta1-theta2)
+        y = (rho1*np.cos(theta2)-rho2*np.cos(theta1))/np.sin(theta1-theta2)
+    
+    return x,y
+    
+    
     
 folder="C:\\Users\\eziyguo\\Desktop\\opencv\\"
 filename="test1.jpg"
