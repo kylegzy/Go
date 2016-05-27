@@ -25,4 +25,17 @@ th3 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
 
 
 ###Hough
-lines = cv2.HoughLines(binv,1,np.pi/18,50)
+lines = cv2.HoughLines(binv,1,np.pi/180,binv.shape[0]/2)
+lines=np.float64(lines)
+plt.polar(lines[:,:,1],lines[:,:,0],'x')
+
+ix=np.where(np.absolute(f[:,:,1])<np.deg2rad(10))
+np.sort(f[:,:,0][ix[0]],axis=0)
+
+n=plotPredictPoint(fig1,p)
+
+cv2.imwrite(folder+"ttt.jpg",n)
+
+d=adaptiveThresh(imgChop(g_fig1,p[8][10],block,'center'))
+za=d.copy()
+re,cnt,hier=cv2.findContours(za,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
